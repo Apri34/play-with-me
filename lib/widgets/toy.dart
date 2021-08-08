@@ -1,35 +1,75 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
-class Toy extends StatelessWidget {
+class Toy extends StatefulWidget {
   final _Form form;
 
   Toy._({required this.form});
 
-  factory Toy.triangle() => Toy._(form: _Form.TRIANGLE);
+  factory Toy.triangle() => Toy._(
+        form: _Form.TRIANGLE,
+      );
 
-  factory Toy.circle() => Toy._(form: _Form.CIRCLE);
+  factory Toy.circle() => Toy._(
+        form: _Form.CIRCLE,
+      );
 
-  factory Toy.rectangle() => Toy._(form: _Form.RECTANGLE);
+  factory Toy.rectangle() => Toy._(
+        form: _Form.RECTANGLE,
+      );
+
+  @override
+  _ToyState createState() => _ToyState();
+}
+
+class _ToyState extends State<Toy> {
+  static const List<Color> colors = [
+    Colors.green,
+    Colors.yellow,
+    Colors.orange,
+    Colors.blue,
+    Colors.red,
+    Colors.cyan,
+    Colors.deepPurple
+  ];
+
+  late Color color;
+
+  @override
+  void initState() {
+    color = colors[Random().nextInt(colors.length)];
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     final double size = 100;
-    return CustomPaint(
-      size: Size(size, size),
-      painter: ToyPainter(form),
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          int index = colors.indexOf(color);
+          color = colors[index == colors.length - 1 ? 0 : index + 1];
+        });
+      },
+      child: CustomPaint(
+        size: Size(size, size),
+        painter: ToyPainter(widget.form, color),
+      ),
     );
   }
 }
 
 class ToyPainter extends CustomPainter {
   final _Form form;
+  final Color color;
 
-  ToyPainter(this.form);
+  ToyPainter(this.form, this.color);
 
   @override
   void paint(Canvas canvas, Size size) {
     Paint paint = Paint();
-    paint.color = Colors.black;
+    paint.color = color;
     switch (form) {
       case _Form.CIRCLE:
         drawCircle(canvas, paint, size);
