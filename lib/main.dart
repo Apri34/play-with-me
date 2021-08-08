@@ -2,7 +2,9 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:play_with_me/widgets/sprinkle.dart';
 import 'package:play_with_me/widgets/toy.dart';
+import 'package:shake/shake.dart';
 
 void main() {
   runApp(MyApp());
@@ -50,11 +52,23 @@ class _PlayWithMeState extends State<PlayWithMe> with TickerProviderStateMixin {
   Offset? gravityEnd;
   Offset? position;
   bool gravity = false;
+  List<Sprinkle> sprinkles = [];
 
   @override
   void initState() {
     size = 100;
     super.initState();
+    ShakeDetector.autoStart(onPhoneShake: () {
+      setState(() {
+        sprinkles.add(
+          Sprinkle(
+              key: UniqueKey(),
+              onCompleteListener: (key) {
+                sprinkles.removeWhere((element) => element.key == key);
+              }),
+        );
+      });
+    });
   }
 
   @override
@@ -62,6 +76,7 @@ class _PlayWithMeState extends State<PlayWithMe> with TickerProviderStateMixin {
     return Scaffold(
       body: Stack(
         children: [
+          ...sprinkles,
           Positioned(
             left: position?.dx ??
                 MediaQuery.of(context).size.width / 2 - size / 2,
