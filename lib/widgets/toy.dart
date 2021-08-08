@@ -3,21 +3,6 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 class Toy extends StatefulWidget {
-  final _Form form;
-
-  Toy._({required this.form});
-
-  factory Toy.triangle() => Toy._(
-        form: _Form.TRIANGLE,
-      );
-
-  factory Toy.circle() => Toy._(
-        form: _Form.CIRCLE,
-      );
-
-  factory Toy.rectangle() => Toy._(
-        form: _Form.RECTANGLE,
-      );
 
   @override
   _ToyState createState() => _ToyState();
@@ -35,10 +20,12 @@ class _ToyState extends State<Toy> {
   ];
 
   late Color color;
+  late _Form form;
 
   @override
   void initState() {
     color = colors[Random().nextInt(colors.length)];
+    form = _Form.values[Random().nextInt(_Form.values.length)];
     super.initState();
   }
 
@@ -52,9 +39,18 @@ class _ToyState extends State<Toy> {
           color = colors[index == colors.length - 1 ? 0 : index + 1];
         });
       },
-      child: CustomPaint(
-        size: Size(size, size),
-        painter: ToyPainter(widget.form, color),
+      onDoubleTap: () {
+        setState(() {
+          int index = _Form.values.indexOf(form);
+          form = _Form.values[index == _Form.values.length - 1 ? 0 : index + 1];
+        });
+      },
+      child: AnimatedContainer(
+        duration: Duration(seconds: 1),curve: Curves.linear,
+        child: CustomPaint(
+          size: Size(size, size),
+          painter: ToyPainter(form, color),
+        ),
       ),
     );
   }
