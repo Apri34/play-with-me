@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:play_with_me/widgets/toy.dart';
 
@@ -21,9 +23,22 @@ class PlayWithMe extends StatefulWidget {
   _PlayWithMeState createState() => _PlayWithMeState();
 }
 
-class _PlayWithMeState extends State<PlayWithMe> {
+class _PlayWithMeState extends State<PlayWithMe>
+    with SingleTickerProviderStateMixin {
   final double minSize = 50;
   final double maxSize = 150;
+
+  late final AnimationController _controller = AnimationController(
+    vsync: this,
+    duration: Duration(milliseconds: 750),
+  );
+
+  late final Animation<double> flipAnimation =
+      Tween<double>(begin: 0, end: 4 * pi).animate(
+    CurvedAnimation(parent: _controller, curve: Curves.linear),
+  )..addListener(() {
+          setState(() {});
+        });
 
   late double size;
   Offset? position;
@@ -46,7 +61,13 @@ class _PlayWithMeState extends State<PlayWithMe> {
                 MediaQuery.of(context).size.height / 2 - size / 2,
             child: Draggable(
               feedback: Container(),
-              child: Toy(size: size),
+              child: Transform(
+                alignment: FractionalOffset.center,
+                transform: Matrix4.identity()
+                  ..setEntry(3, 2, 0.005)
+                  ..rotateY(flipAnimation.value),
+                child: Toy(size: size),
+              ),
               onDraggableCanceled: (velocity, offset) {
                 setState(() {
                   position = offset;
@@ -66,15 +87,25 @@ class _PlayWithMeState extends State<PlayWithMe> {
             bottom: 50,
             left: 20,
             right: 20,
-            child: Slider(
-              value: size,
-              min: minSize,
-              max: maxSize,
-              onChanged: (value) {
-                setState(() {
-                  size = value;
-                });
-              },
+            child: Column(
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    _controller.forward().then((_) => _controller.reset());
+                  },
+                  child: Text("Flip"),
+                ),
+                Slider(
+                  value: size,
+                  min: minSize,
+                  max: maxSize,
+                  onChanged: (value) {
+                    setState(() {
+                      size = value;
+                    });
+                  },
+                ),
+              ],
             ),
           ),
         ],
