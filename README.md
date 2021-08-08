@@ -1,16 +1,39 @@
 # play_with_me
 
-Play with me
+Play with me. There is an object in the middle that can be interacted with in 9 different ways
 
-## Getting Started
+### Change color
 
-This project is a starting point for a Flutter application.
+Tap the object to change its color
 
-A few resources to get you started if this is your first Flutter project:
+### Change shape
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+Double-tap the object to change its shape
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+### Change size with Slider
+
+Use the slider to change its size
+
+### Spin with button
+
+Tap the button to spin the object
+
+### Drag the object
+
+Hold the object to drag it somewhere
+
+### Gravity
+
+Use the switch to turn on/off gravity. When gravity is turned on, the object is always pulled back to the middl after dragging it somewhere.
+
+### Shake to create sprinkles
+
+Shape your device to create sprinkles
+
+### Zoom
+
+Use two fingers to zoom. It's another way to change two object's size
+
+### Rotate
+
+Use two fingers to rotate the object
