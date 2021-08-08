@@ -48,12 +48,9 @@ class _ToyState extends State<Toy> {
           form = _Form.values[index == _Form.values.length - 1 ? 0 : index + 1];
         });
       },
-      child: AnimatedContainer(
-        duration: Duration(seconds: 1),curve: Curves.linear,
-        child: CustomPaint(
-          size: Size(widget.size, widget.size),
-          painter: ToyPainter(form, color),
-        ),
+      child: CustomPaint(
+        size: Size(widget.size, widget.size),
+        painter: ToyPainter(form, color),
       ),
     );
   }
