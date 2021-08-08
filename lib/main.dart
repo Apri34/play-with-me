@@ -56,6 +56,7 @@ class _PlayWithMeState extends State<PlayWithMe> with TickerProviderStateMixin {
   List<Sprinkle> sprinkles = [];
   double initialSize = 100;
   double initialRadians = 0.0;
+  Offset? initialPosition;
 
   @override
   void initState() {
@@ -76,35 +77,37 @@ class _PlayWithMeState extends State<PlayWithMe> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    if (position == null) {
+      position = Offset(MediaQuery.of(context).size.width / 2 - size / 2,
+          MediaQuery.of(context).size.height / 2 - size / 2);
+    }
     return GestureDetector(
       onScaleStart: (s) {
         initialSize = size;
         initialRadians = radians;
+        initialPosition = position;
       },
       onScaleUpdate: (s) {
-        setState(() {
-          radians = initialRadians + s.rotation;
-        });
+        radians = initialRadians + s.rotation;
         double scale = s.scale;
         if (scale > 1 && scale * initialSize <= maxSize) {
-          setState(() {
-            size = initialSize * scale;
-          });
+          size = initialSize * scale;
         } else if (scale < 1 && scale * initialSize >= minSize) {
-          setState(() {
-            size = initialSize * scale;
-          });
+          size = initialSize * scale;
         }
+        position = Offset(
+          initialPosition!.dx + initialSize / 2 - size / 2,
+          initialPosition!.dy + initialSize / 2 - size / 2,
+        );
+        setState(() {});
       },
       child: Scaffold(
         body: Stack(
           children: [
             ...sprinkles,
             Positioned(
-              left: position?.dx ??
-                  MediaQuery.of(context).size.width / 2 - size / 2,
-              top: position?.dy ??
-                  MediaQuery.of(context).size.height / 2 - size / 2,
+              left: position!.dx,
+              top: position!.dy,
               child: Draggable(
                 feedback: Container(),
                 child: Transform(
@@ -172,9 +175,17 @@ class _PlayWithMeState extends State<PlayWithMe> with TickerProviderStateMixin {
                     value: size,
                     min: minSize,
                     max: maxSize,
+                    onChangeStart: (value) {
+                      initialSize = size;
+                      initialPosition = position;
+                    },
                     onChanged: (value) {
                       setState(() {
                         size = value;
+                        position = Offset(
+                          initialPosition!.dx + initialSize / 2 - size / 2,
+                          initialPosition!.dy + initialSize / 2 - size / 2,
+                        );
                       });
                     },
                   ),
