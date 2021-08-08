@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:play_with_me/widgets/toy.dart';
 
 void main() {
@@ -23,25 +24,32 @@ class PlayWithMe extends StatefulWidget {
   _PlayWithMeState createState() => _PlayWithMeState();
 }
 
-class _PlayWithMeState extends State<PlayWithMe>
-    with SingleTickerProviderStateMixin {
+class _PlayWithMeState extends State<PlayWithMe> with TickerProviderStateMixin {
   final double minSize = 50;
   final double maxSize = 150;
 
-  late final AnimationController _controller = AnimationController(
+  late final AnimationController _flipController = AnimationController(
     vsync: this,
     duration: Duration(milliseconds: 750),
   );
 
+  late final _gravityController = AnimationController(
+    duration: Duration(seconds: 1),
+    vsync: this,
+  );
+
   late final Animation<double> flipAnimation =
       Tween<double>(begin: 0, end: 4 * pi).animate(
-    CurvedAnimation(parent: _controller, curve: Curves.linear),
+    CurvedAnimation(parent: _flipController, curve: Curves.linear),
   )..addListener(() {
           setState(() {});
         });
 
   late double size;
+  Offset? gravityBegin;
+  Offset? gravityEnd;
   Offset? position;
+  bool gravity = false;
 
   @override
   void initState() {
@@ -81,6 +89,9 @@ class _PlayWithMeState extends State<PlayWithMe>
                   );
                 });
               },
+              onDragEnd: (dragEndDetails) {
+                if (gravity) _runGravityAnimation(context);
+              },
             ),
           ),
           Positioned(
@@ -88,10 +99,31 @@ class _PlayWithMeState extends State<PlayWithMe>
             left: 20,
             right: 20,
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text("Gravity"),
+                    SizedBox(
+                      width: 6,
+                    ),
+                    Switch(
+                      value: gravity,
+                      onChanged: (value) {
+                        gravity = !gravity;
+                        if (gravity) {
+                          _runGravityAnimation(context);
+                        }
+                      },
+                    ),
+                  ],
+                ),
                 ElevatedButton(
                   onPressed: () {
-                    _controller.forward().then((_) => _controller.reset());
+                    _flipController
+                        .forward()
+                        .then((_) => _flipController.reset());
                   },
                   child: Text("Flip"),
                 ),
@@ -111,5 +143,30 @@ class _PlayWithMeState extends State<PlayWithMe>
         ],
       ),
     );
+  }
+
+  _runGravityAnimation(BuildContext context) {
+    final Animation<Offset> gravityAnimation = Tween<Offset>(
+            begin: position,
+            end: Offset(MediaQuery.of(context).size.width / 2 - size / 2,
+                MediaQuery.of(context).size.height / 2 - size / 2))
+        .animate(
+      CurvedAnimation(parent: _gravityController, curve: Curves.linear),
+    );
+    gravityAnimation.addListener(() {
+      if (_gravityController.status == AnimationStatus.forward) {
+        setState(() {
+          position = gravityAnimation.value;
+        });
+      }
+    });
+    _gravityController.forward(from: 0.0);
+  }
+
+  @override
+  void dispose() {
+    _gravityController.dispose();
+    _flipController.dispose();
+    super.dispose();
   }
 }
