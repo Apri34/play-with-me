@@ -3,10 +3,11 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 class Sprinkle extends StatefulWidget {
-  Sprinkle({required Key key, required this.onCompleteListener})
+  Sprinkle({required Key key, required this.onCompleteListener, required this.offset})
       : super(key: key);
 
   final void Function(Key key) onCompleteListener;
+  final Offset offset;
 
   @override
   _SprinkleState createState() => _SprinkleState();
@@ -50,10 +51,10 @@ class _SprinkleState extends State<Sprinkle>
     double radius = sqrt(pow(width, 2) + pow(height, 2)) * 1.2;
 
     return Positioned(
-      left: width / 2 -
+      left: widget.offset.dx -
           sprinkleRadius +
           sin(pi / 2 - radians) * _animation.value * radius,
-      top: height / 2 -
+      top: widget.offset.dy -
           sprinkleRadius +
           sin(radians) * _animation.value * radius,
       width: sprinkleRadius * 2,

@@ -66,10 +66,15 @@ class _PlayWithMeState extends State<PlayWithMe> with TickerProviderStateMixin {
       setState(() {
         sprinkles.add(
           Sprinkle(
-              key: UniqueKey(),
-              onCompleteListener: (key) {
-                sprinkles.removeWhere((element) => element.key == key);
-              }),
+            key: UniqueKey(),
+            onCompleteListener: (key) {
+              sprinkles.removeWhere((element) => element.key == key);
+            },
+            offset: Offset(
+              position!.dx + size / 2,
+              position!.dy + size / 2,
+            ),
+          ),
         );
       });
     });
