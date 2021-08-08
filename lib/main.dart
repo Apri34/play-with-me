@@ -41,20 +41,21 @@ class _PlayWithMeState extends State<PlayWithMe> with TickerProviderStateMixin {
   );
 
   late final Animation<double> flipAnimation =
-  Tween<double>(begin: 0, end: 4 * pi).animate(
+      Tween<double>(begin: 0, end: 4 * pi).animate(
     CurvedAnimation(parent: _flipController, curve: Curves.linear),
-  )
-    ..addListener(() {
-      setState(() {});
-    });
+  )..addListener(() {
+          setState(() {});
+        });
 
   late double size;
+  double radians = 0.0;
   Offset? gravityBegin;
   Offset? gravityEnd;
   Offset? position;
   bool gravity = false;
   List<Sprinkle> sprinkles = [];
   double initialSize = 100;
+  double initialRadians = 0.0;
 
   @override
   void initState() {
@@ -76,8 +77,14 @@ class _PlayWithMeState extends State<PlayWithMe> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onScaleStart: (s) => initialSize = size,
+      onScaleStart: (s) {
+        initialSize = size;
+        initialRadians = radians;
+      },
       onScaleUpdate: (s) {
+        setState(() {
+          radians = initialRadians + s.rotation;
+        });
         double scale = s.scale;
         if (scale > 1 && scale * initialSize <= maxSize) {
           setState(() {
@@ -95,15 +102,9 @@ class _PlayWithMeState extends State<PlayWithMe> with TickerProviderStateMixin {
             ...sprinkles,
             Positioned(
               left: position?.dx ??
-                  MediaQuery
-                      .of(context)
-                      .size
-                      .width / 2 - size / 2,
+                  MediaQuery.of(context).size.width / 2 - size / 2,
               top: position?.dy ??
-                  MediaQuery
-                      .of(context)
-                      .size
-                      .height / 2 - size / 2,
+                  MediaQuery.of(context).size.height / 2 - size / 2,
               child: Draggable(
                 feedback: Container(),
                 child: Transform(
@@ -112,7 +113,8 @@ class _PlayWithMeState extends State<PlayWithMe> with TickerProviderStateMixin {
                     ..setEntry(3, 2, 0.005)
                     ..rotateY(flipAnimation.value),
                   child: Toy(
-                    size: size
+                    size: size,
+                    radians: radians,
                   ),
                 ),
                 onDraggableCanceled: (velocity, offset) {
@@ -187,15 +189,9 @@ class _PlayWithMeState extends State<PlayWithMe> with TickerProviderStateMixin {
 
   _runGravityAnimation(BuildContext context) {
     final Animation<Offset> gravityAnimation = Tween<Offset>(
-        begin: position,
-        end: Offset(MediaQuery
-            .of(context)
-            .size
-            .width / 2 - size / 2,
-            MediaQuery
-                .of(context)
-                .size
-                .height / 2 - size / 2))
+            begin: position,
+            end: Offset(MediaQuery.of(context).size.width / 2 - size / 2,
+                MediaQuery.of(context).size.height / 2 - size / 2))
         .animate(
       CurvedAnimation(parent: _gravityController, curve: Curves.linear),
     );

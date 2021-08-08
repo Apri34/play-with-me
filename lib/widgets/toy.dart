@@ -5,8 +5,9 @@ import 'package:flutter/material.dart';
 class Toy extends StatefulWidget {
 
   final double size;
+  final double radians;
 
-  const Toy({required this.size});
+  const Toy({required this.size, required this.radians});
 
   @override
   _ToyState createState() => _ToyState();
@@ -48,9 +49,13 @@ class _ToyState extends State<Toy> {
           form = _Form.values[index == _Form.values.length - 1 ? 0 : index + 1];
         });
       },
-      child: CustomPaint(
-        size: Size(widget.size, widget.size),
-        painter: ToyPainter(form, color),
+      child: Transform(
+        transform: Matrix4.rotationZ(widget.radians),
+        alignment: FractionalOffset.center,
+        child: CustomPaint(
+          size: Size(widget.size, widget.size),
+          painter: ToyPainter(form, color),
+        ),
       ),
     );
   }
