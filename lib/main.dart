@@ -26,6 +26,7 @@ class _PlayWithMeState extends State<PlayWithMe> {
   final double maxSize = 150;
 
   late double size;
+  Offset? position;
 
   @override
   void initState() {
@@ -38,8 +39,28 @@ class _PlayWithMeState extends State<PlayWithMe> {
     return Scaffold(
       body: Stack(
         children: [
-          Center(
-            child: Toy(size: size,),
+          Positioned(
+            left: position?.dx ??
+                MediaQuery.of(context).size.width / 2 - size / 2,
+            top: position?.dy ??
+                MediaQuery.of(context).size.height / 2 - size / 2,
+            child: Draggable(
+              feedback: Container(),
+              child: Toy(size: size),
+              onDraggableCanceled: (velocity, offset) {
+                setState(() {
+                  position = offset;
+                });
+              },
+              onDragUpdate: (dragUpdateDetails) {
+                setState(() {
+                  position = Offset(
+                    dragUpdateDetails.globalPosition.dx - size / 2,
+                    dragUpdateDetails.globalPosition.dy - size / 2,
+                  );
+                });
+              },
+            ),
           ),
           Positioned(
             bottom: 50,
