@@ -4,6 +4,10 @@ import 'package:flutter/material.dart';
 
 class Toy extends StatefulWidget {
 
+  final double size;
+
+  const Toy({required this.size});
+
   @override
   _ToyState createState() => _ToyState();
 }
@@ -31,7 +35,6 @@ class _ToyState extends State<Toy> {
 
   @override
   Widget build(BuildContext context) {
-    final double size = 100;
     return GestureDetector(
       onTap: () {
         setState(() {
@@ -48,7 +51,7 @@ class _ToyState extends State<Toy> {
       child: AnimatedContainer(
         duration: Duration(seconds: 1),curve: Curves.linear,
         child: CustomPaint(
-          size: Size(size, size),
+          size: Size(widget.size, widget.size),
           painter: ToyPainter(form, color),
         ),
       ),
